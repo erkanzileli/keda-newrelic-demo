@@ -1,0 +1,45 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: keda-newrelic-demo
+  namespace: default
+spec:
+  scaleTargetRef:
+    name: keda-newrelic-demo
+    apiVersion: apps/v1
+    kind: Deployment
+  pollingInterval: 15
+  cooldownPeriod: 10
+  idleReplicaCount: 1
+  minReplicaCount: 2
+  maxReplicaCount: 10
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: 5
+          policies:
+            - type: Percent
+              value: 100
+              periodSeconds: 15
+        scaleDown:
+          stabilizationWindowSeconds: 5
+          policies:
+            - type: Percent
+              value: 100
+              periodSeconds: 15
+  triggers:
+    - type: new-relic
+      metadata:
+        # Required: Account - Subaccount to run the query on
+        account: "111"
+        # Required: QueryKey - Api key to connect to New Relic
+        queryKey: "NRAK-xxxx"
+        # Optional: nrRegion - Region to query data for. Default value is US.
+        region: "EU"
+        # Optional: noDataError - If the query returns no data should this be treated as an error. Default value is false.
+        noDataError: "true"
+        # Required: nrql
+        nrql: "SELECT average(duration) from Transaction where appName='keda-newrelic-demo' SINCE 1 minutes ago TIMESERIES"
+        # Required: threshold
+        threshold: "1500" # milliseconds

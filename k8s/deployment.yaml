@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keda-newrelic-demo
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keda-newrelic-demo
+  template:
+    metadata:
+      labels:
+        app: keda-newrelic-demo
+    spec:
+      containers:
+        - image: keda-newrelic-demo
+          name: keda-newrelic-demo
+          env:
+            - name: NEW_RELIC_APP_NAME
+              value: keda-newrelic-demo
+            - name: NEW_RELIC_LICENSE_KEY
+              value: xxx
+          resources: {}

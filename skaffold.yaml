@@ -1,0 +1,21 @@
+apiVersion: skaffold/v2beta26
+kind: Config
+metadata:
+  name: newrelic
+build:
+  artifacts:
+    - image: keda-newrelic-demo
+      ko:
+        flags:
+          - -v
+deploy:
+  helm:
+    releases:
+      - name: keda
+        repo: https://kedacore.github.io/charts
+        remoteChart: keda
+        namespace: cert-manager
+        createNamespace: true
+  kubectl:
+    manifests:
+      - k8s/*.yaml
